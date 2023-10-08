@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /* CSS untuk kolom komentar */
+      #commentSection {
+        margin-top: 20px;
+      }
+
+      #commentInput {
+        width: 100%;
+        padding: 10px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      #commentButton {
+        padding: 10px 20px;
+        background-color: #0080ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .commentItem {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border-radius: 5px;
+      }
+      #selectedText{
+        white-space: pre-line;
+        margin: 5px;
+        color: white;
+      }
+      #selectedTextContainer{
+        background-color: blue;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Text from Page 2</h1>
+    <div id="selectedTextContainer">
+      <!-- Tampilkan teks yang dipilih -->
+      <p id="selectedText"></p>
+    </div>
+    <!-- Kolom komentar -->
+    <div id="commentSection">
+      <input
+        type="text"
+        id="commentInput"
+        placeholder="Tambahkan komentar..."
+      />
+      <button id="commentButton">Kirim</button>
+      <div id="commentList"></div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var selectedTextIndex = localStorage.getItem("selectedTextIndex");
+        var messages = JSON.parse(localStorage.getItem("messages")) || [];
+
+        if (
+          selectedTextIndex !== null &&
+          selectedTextIndex >= 0 &&
+          selectedTextIndex < messages.length
+        ) {
+          var selectedMessage = messages[selectedTextIndex];
+          var selectedTextElement = document.getElementById("selectedText");
+
+          // Menampilkan data pesan yang sesuai di page3
+          var from = selectedMessage.from;
+          var to = selectedMessage.to;
+          var messageText = selectedMessage.message;
+
+          selectedTextElement.textContent =
+            "From: " + from + "\nTo: " + to + "\n\nMessages: " + messageText;
+        }
+
+        // Ambil elemen-elemen komentar
+        var commentInput = document.getElementById("commentInput");
+        var commentButton = document.getElementById("commentButton");
+        var commentList = document.getElementById("commentList");
+
+        // Memuat komentar-komentar terkait dengan div yang dipilih dari localStorage
+        var selectedTextCommentsKey =
+          "selectedTextComments_" + selectedTextIndex;
+        var selectedTextComments =
+          JSON.parse(localStorage.getItem(selectedTextCommentsKey)) || [];
+        for (var i = 0; i < selectedTextComments.length; i++) {
+          var commentText = selectedTextComments[i];
+          addComment(commentText);
+        }
+
+        // Event listener untuk tombol Kirim
+        commentButton.addEventListener("click", function () {
+          var commentText = commentInput.value;
+          if (commentText) {
+            addComment(commentText);
+
+            // Menyimpan komentar terkait dengan div yang dipilih ke localStorage
+            selectedTextComments.push(commentText);
+            localStorage.setItem(
+              selectedTextCommentsKey,
+              JSON.stringify(selectedTextComments)
+            );
+
+            // Bersihkan input
+            commentInput.value = "";
+          }
+        });
+
+        // Fungsi untuk menambahkan komentar ke tampilan
+        function addComment(commentText) {
+          var commentItem = document.createElement("div");
+          commentItem.classList.add("commentItem");
+          commentItem.textContent = commentText;
+          commentList.appendChild(commentItem);
+        }
+      });
+    </script>
+  </body>
+</html>

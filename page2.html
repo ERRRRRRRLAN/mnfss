@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page 2</title>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      /* CSS untuk mengatur gaya div */
+      .textDiv {
+        background-color: blue; /* Warna latar belakang */
+        margin: 10px;
+        margin-bottom: 10px; /* Jarak antara div-div */
+        width: 300px;
+        height: 300px;
+      }
+      #textContainer {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .paragraf {
+        margin: 15px;
+        color: white;
+        overflow-wrap: break-word;
+        white-space: pre-line;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <h1>Text from Page 1</h1>
+    <div id="textContainer"></div>
+    <button id="resetButton" class="reset-button">Reset</button>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var textContainer = document.getElementById("textContainer");
+        var messages = JSON.parse(localStorage.getItem("messages")) || [];
+
+        messages.forEach(function (messageData, index) {
+          var from = messageData.from;
+          var to = messageData.to;
+          var messageText = messageData.message;
+
+          var div = document.createElement("div");
+          div.classList.add("textDiv"); // Menambahkan kelas CSS "textDiv" ke div
+
+          var closeButton = document.createElement("i");
+          closeButton.classList.add("fas", "fa-times", "close-button"); // Menambahkan kelas FontAwesome untuk ikon silang
+
+          // Tambahkan event listener untuk menghapus div saat ikon silang diklik
+          closeButton.addEventListener("click", function (event) {
+            event.stopPropagation(); // Menghentikan penyebaran event
+            // Hapus data dari localStorage
+            messages.splice(index, 1);
+            localStorage.setItem("messages", JSON.stringify(messages));
+
+            // Hapus div dari tampilan
+            div.remove();
+          });
+
+          var paragraph = document.createElement("p");
+          paragraph.classList.add("paragraf");
+          paragraph.textContent =
+            "From: " + from + "\nTo: " + to + "\n\nMessages: " + messageText;
+
+          // Tambahkan event listener untuk mengalihkan ke page3 saat div diklik
+          div.addEventListener("click", function () {
+            var selectedTextIndex = messages.indexOf(messageData); // Ambil indeks pesan yang diklik
+            localStorage.setItem("selectedTextIndex", selectedTextIndex); // Simpan indeks pesan yang dipilih ke localStorage
+            window.location.href = "page3.html"; // Arahkan ke page3
+          });
+
+          // Tambahkan ikon silang ke div
+          div.appendChild(closeButton);
+
+          div.appendChild(paragraph);
+          textContainer.appendChild(div);
+        });
+
+        // Tambahkan event listener untuk tombol reset
+        var resetButton = document.getElementById("resetButton");
+        resetButton.addEventListener("click", function () {
+          // Hapus semua data komentar terkait dengan div yang direset
+          var selectedTextIndex = localStorage.getItem("selectedTextIndex");
+          if (selectedTextIndex !== null) {
+            var selectedTextCommentsKey =
+              "selectedTextComments_" + selectedTextIndex;
+            localStorage.removeItem(selectedTextCommentsKey);
+          }
+
+          // Hapus semua data dari localStorage
+          localStorage.removeItem("messages"); // Ubah "texts" menjadi "messages"
+
+          // Hapus semua div di textContainer
+          var divs = textContainer.querySelectorAll(".textDiv");
+          divs.forEach(function (div) {
+            // Hapus elemen div dari tampilan
+            div.remove();
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

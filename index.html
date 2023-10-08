@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menfess</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="from-to-inputs">
+      <input type="text" id="fromInput" placeholder="From:" />
+      <input type="text" id="toInput" placeholder="To:" />
+    </div>
+    <div class="textarea-container">
+      <textarea
+        name="text"
+        id="myTextarea"
+        cols="30"
+        rows="10"
+        placeholder="Tulis pesan..."
+      ></textarea>
+    </div>
+    <button class="button" id="submitButton">Submit</button>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var textarea = document.getElementById("myTextarea");
+        var fromInput = document.getElementById("fromInput");
+        var toInput = document.getElementById("toInput");
+        var submitButton = document.getElementById("submitButton");
+
+        submitButton.addEventListener("click", function () {
+          var fromText = fromInput.value;
+          var toText = toInput.value;
+          var messageText = textarea.value;
+
+          // Pastikan "From" dan "To" sudah diisi
+          if (fromText.trim() === "" || toText.trim() === "") {
+            alert("Mohon isi 'From' dan 'To' sebelum mengirim pesan.");
+            return;
+          }
+
+          // Simpan "From", "To", dan pesan ke localStorage
+          var messageData = {
+            from: fromText,
+            to: toText,
+            message: messageText,
+          };
+
+          var existingMessages =
+            JSON.parse(localStorage.getItem("messages")) || [];
+          existingMessages.push(messageData);
+          localStorage.setItem("messages", JSON.stringify(existingMessages));
+
+          // Clear semua input setelah pengiriman
+          fromInput.value = "";
+          toInput.value = "";
+          textarea.value = "";
+        });
+      });
+    </script>
+  </body>
+</html>
